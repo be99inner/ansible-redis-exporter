@@ -1,0 +1,38 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=Prometheus Node Exporter
+After=network-online.target
+StartLimitInterval=0
+
+[Service]
+Type=simple
+User={{ redis_exporter_system_user }}
+Group={{ redis_exporter_system_group }}
+ExecStart=/usr/local/bin/redis_exporter \
+{% if redis_exporter_redis_password | length > 0 %}
+    -redis.password "{{ redis_exporter_redis_password }}" \
+{% endif %}
+    -redis.addr {{ redis_exporter_redis_address }} \
+{% if redis_exporter_custom_option | length > 0 %}
+    {{ redis_exporter_custom_option }} \
+{% endif %}
+    -namespace {{ redis_exporter_redis_namespace }} \
+    -web.listen-address {{ redis_exporter_web_listen_address }} \
+    -web.telemetry-path {{ redis_exporter_web_telemetry_path }}
+
+SyslogIdentifier=redis_exporter
+Restart=always
+RestartSec=1
+
+{% if redis_exporter_systemd_version | int >= 232 %}
+ProtectSystem=strict
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=yes
+{% else %}
+ProtectSystem=full
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target
