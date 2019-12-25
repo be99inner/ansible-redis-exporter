@@ -59,7 +59,7 @@
         redis_exporter_version: "{{ _latest_release.json.tag_name[1:] }}"
   when:
     - redis_exporter_version == "lastest"
-    - node_exporter_binary_local_dir | length == 0
+    - redis_exporter_binary_local_dir | length == 0
   delegate_to: localhost
   run_once: true
 
