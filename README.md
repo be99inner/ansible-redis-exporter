@@ -50,4 +50,4 @@ MIT
 Author Information
 ------------------
 
-be99inner
+Anurak Jannawan
